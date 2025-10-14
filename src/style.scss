@@ -1,3 +1,7 @@
+@use "./styles/fonts.scss";
+@use "./styles/reset.scss";
+@use "./styles/variables.scss" as vars;
+
 * {
   margin: 0;
   padding: 0;
@@ -23,6 +27,8 @@ body {
   display: block;
   width: 100vw;
   height: 100vh;
+
+  font-family: "Payton", sans-serif, system-ui;
 }
 
 #experience {
@@ -45,8 +51,10 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  max-width: 700px;
+  width: 100%;
   font-size: 2rem;
   display: none;
   z-index: 1000;
-  background-color: #fff;
+  background-color: vars.$base-white;
 }

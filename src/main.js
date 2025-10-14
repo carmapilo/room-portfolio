@@ -18,14 +18,44 @@ const modals = {
 };
 
 document.querySelectorAll(".modal-exit-button").forEach((button) => {
-  button.addEventListener("click", (e) => {
-    const modal = e.target.closest(".modal");
-    hideModal(modal);
-  });
+  let touchHappened = false;
+  button.addEventListener(
+    "click",
+    (e) => {
+      touchHappened = true;
+      e.preventDefault();
+      const modal = e.target.closest(".modal");
+      hideModal(modal);
+    },
+    { passive: false }
+  );
+
+  button.addEventListener(
+    "touchend",
+    (e) => {
+      if (touchHappened) return;
+
+      e.preventDefault();
+      const modal = e.target.closest(".modal");
+      hideModal(modal);
+    },
+    { passive: false }
+  );
 });
+
+let isModalOpen = false;
 
 const showModal = (modal) => {
   modal.style.display = "block";
+  isModalOpen = true;
+  controls.enabled = false;
+
+  if (currentHoveredObject) {
+    playHoverAnimation(currentHoveredObject, false);
+    currentHoveredObject = null;
+  }
+  document.body.style.cursor = "default";
+  currentIntersects = [];
 
   gsap.set(modal, { opacity: 0 });
   gsap.to(modal, { opacity: 1, duration: 0.5, ease: "power2.inOut" });
@@ -38,12 +68,15 @@ const hideModal = (modal) => {
     ease: "power2.inOut",
     onComplete: () => {
       modal.style.display = "none";
+      isModalOpen = false;
+      controls.enabled = true;
     },
   });
 };
 
 const raycasterObjects = [];
 let currentIntersects = [];
+let currentHoveredObject = null;
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -61,14 +94,35 @@ window.addEventListener("mousemove", (event) => {
   pointer.y = -(event.clientY / sizes.height) * 2 + 1;
 });
 
-window.addEventListener("click", (event) => {
+window.addEventListener(
+  "touchstart",
+  (event) => {
+    if (isModalOpen) return;
+    event.preventDefault();
+    pointer.x = (event.touches[0].clientX / sizes.width) * 2 - 1;
+    pointer.y = -(event.touches[0].clientY / sizes.height) * 2 + 1;
+  },
+  { passive: false }
+);
+
+window.addEventListener(
+  "touchend",
+  (event) => {
+    if (isModalOpen) return;
+    event.preventDefault();
+    handleRaycasterInteraction();
+  },
+  { passive: false }
+);
+
+function handleRaycasterInteraction() {
   if (currentIntersects.length > 0) {
     let object = currentIntersects[0].object;
 
     while (object.parent && !object.name.includes("Raycaster")) {
       object = object.parent;
     }
-    console.log(object.name);
+    // console.log(object.name);
 
     if (object.name.includes("AboutMe")) {
       showModal(modals.about);
@@ -76,11 +130,15 @@ window.addEventListener("click", (event) => {
       showModal(modals.projects);
     } else if (object.name.includes("Contact")) {
       showModal(modals.contact);
+    } else if (object.name.includes("Computer")) {
+      showModal(modals.projects);
     }
   }
-});
+}
 
-gltfLoader.load("/models/Room_Portfolio.glb", (gltf) => {
+window.addEventListener("click", handleRaycasterInteraction);
+
+gltfLoader.load("/models/Room_Portfoliov2.glb", (gltf) => {
   // Loop through every part of the loaded model
   gltf.scene.traverse((child) => {
     // Check if the object is a mesh
@@ -90,8 +148,19 @@ gltfLoader.load("/models/Room_Portfolio.glb", (gltf) => {
     }
 
     if (child.name.includes("Raycaster")) {
-      console.log(child.name);
       raycasterObjects.push(child);
+    }
+
+    if (child.name.includes("Up")) {
+      child.userData.initialScale = new THREE.Vector3().copy(child.scale);
+      child.userData.initialPosition = new THREE.Vector3().copy(child.position);
+      child.userData.initialRotation = new THREE.Euler().copy(child.rotation);
+    }
+
+    if (child.name.includes("Hover")) {
+      child.userData.initialScale = new THREE.Vector3().copy(child.scale);
+      child.userData.initialPosition = new THREE.Vector3().copy(child.position);
+      child.userData.initialRotation = new THREE.Euler().copy(child.rotation);
     }
   });
   scene.add(gltf.scene);
@@ -163,6 +232,40 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
+function playHoverAnimation(object, isHovering) {
+  gsap.killTweensOf(object.scale);
+  gsap.killTweensOf(object.rotation);
+  gsap.killTweensOf(object.position);
+
+  if (isHovering) {
+    gsap.to(object.scale, {
+      x: object.userData.initialScale.x * 1.2,
+      y: object.userData.initialScale.y * 1.2,
+      z: object.userData.initialScale.z * 1.2,
+      duration: 0.5,
+      ease: "power2.inOut",
+    });
+    gsap.to(object.rotation, {
+      x: object.userData.initialRotation.x + Math.PI / 32,
+      duration: 0.5,
+      ease: "power2.inOut",
+    });
+  } else {
+    gsap.to(object.scale, {
+      x: object.userData.initialScale.x,
+      y: object.userData.initialScale.y,
+      z: object.userData.initialScale.z,
+      duration: 0.3,
+      ease: "power2.inOut",
+    });
+    gsap.to(object.rotation, {
+      x: object.userData.initialRotation.x,
+      duration: 0.3,
+      ease: "power2.inOut",
+    });
+  }
+}
+
 function render() {
   controls.update();
 
@@ -171,20 +274,41 @@ function render() {
   // console.log(controls.target);
 
   // Raycaster
-  raycaster.setFromCamera(pointer, camera);
+  if (!isModalOpen) {
+    raycaster.setFromCamera(pointer, camera);
 
-  // calculate objects intersecting the picking ray
-  currentIntersects = raycaster.intersectObjects(raycasterObjects);
+    // calculate objects intersecting the picking ray
+    currentIntersects = raycaster.intersectObjects(raycasterObjects);
 
-  // Change the color of the intersecting object
-  for (let i = 0; i < currentIntersects.length; i++) {
-    // currentIntersects[i].object.material.color.set(0xff0000);
-  }
+    if (currentIntersects.length > 0) {
+      let currentIntersectObject = currentIntersects[0].object;
+      while (
+        currentIntersectObject.parent &&
+        !currentIntersectObject.name.includes("Raycaster")
+      ) {
+        currentIntersectObject = currentIntersectObject.parent;
+      }
 
-  if (currentIntersects.length > 0) {
+      // console.log(currentIntersectObject.name);
+
+      if (currentIntersectObject.name.includes("Hover")) {
+        if (currentHoveredObject !== currentIntersectObject) {
+          if (currentHoveredObject) {
+            playHoverAnimation(currentHoveredObject, false);
+          }
+
+          playHoverAnimation(currentIntersectObject, true);
+          currentHoveredObject = currentIntersectObject;
+        }
+      }
+    }
     // console.log(currentIntersects[0].object.name);
     document.body.style.cursor = "pointer";
   } else {
+    if (currentHoveredObject) {
+      playHoverAnimation(currentHoveredObject, false);
+      currentHoveredObject = null;
+    }
     document.body.style.cursor = "default";
   }
 
