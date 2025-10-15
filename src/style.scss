@@ -46,18 +46,18 @@ body {
 }
 
 // Modals
-.modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 700px;
-  width: 100%;
-  font-size: 2rem;
-  display: none;
-  z-index: 1000;
-  background-color: vars.$base-white;
-}
+// .modal {
+//   position: absolute;
+//   top: 50%;
+//   left: 50%;
+//   transform: translate(-50%, -50%);
+//   max-width: 700px;
+//   width: 100%;
+//   font-size: 2rem;
+//   display: none;
+//   z-index: 1000;
+//   background-color: vars.$base-white;
+// }
 
 // Loading Screen
 .loading-screen {
@@ -155,5 +155,649 @@ body {
   }
   50% {
     opacity: 1;
+  }
+}
+
+// Beach Theme
+
+// Modal Base Styles
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: vars.$modal-overlay;
+  backdrop-filter: blur(8px);
+  display: none; // <CHANGE> Will be flex when active
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+  overflow-y: auto;
+
+  &.active {
+    display: flex; // <CHANGE> Ensures centering works
+  }
+}
+
+// <CHANGE> Add this to ensure modal container is centered
+.modal-container {
+  background: linear-gradient(
+    135deg,
+    vars.$shell-white 0%,
+    vars.$sand-light 100%
+  );
+  border-radius: 24px;
+  box-shadow: 0 20px 60px vars.$modal-shadow;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: auto; // <CHANGE> Added to ensure centering
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+}
+
+// Modal Header
+.modal-header {
+  background: linear-gradient(
+    135deg,
+    vars.$ocean-blue 0%,
+    vars.$ocean-deep 100%
+  );
+  padding: 2.5rem 2rem 5rem; // <CHANGE> Increased bottom padding from 2rem to 3.5rem
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem 5rem; // <CHANGE> Increased bottom padding for mobile
+  }
+}
+
+.modal-wave-decoration {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 40px; // <CHANGE> Increased from 40px to 50px for better visibility
+  background: vars.$shell-white;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -25px; // <CHANGE> Adjusted from -20px to -25px
+    left: 0;
+    width: 200%;
+    height: 40px; // <CHANGE> Increased from 40px to 50px
+    background: radial-gradient(
+      circle at 50% 0%,
+      transparent 20px,
+      vars.$shell-white 20px
+    );
+    background-size: 40px 40px;
+    animation: wave 3s linear infinite;
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-40px);
+  }
+}
+
+.modal-title {
+  font-family: "Payton", sans-serif, system-ui;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: vars.$shell-white;
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 2;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+  }
+}
+
+.modal-exit-button {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: vars.$coral-accent;
+  color: vars.$shell-white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-family: "Payton", sans-serif, system-ui;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 3;
+
+  &:hover {
+    background: vars.$sunset-orange;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.8rem;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+}
+
+// Modal Content
+.modal-content {
+  padding: 2.5rem 2rem;
+  overflow-y: auto;
+  flex: 1;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.5rem 1rem;
+  }
+}
+
+.modal-section {
+  margin-bottom: 2.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// About Me Specific Styles
+.modal-profile {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.profile-image-placeholder {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, vars.$ocean-blue, vars.$seafoam);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(74, 144, 164, 0.3);
+
+  svg {
+    width: 60px;
+    height: 60px;
+    color: vars.$shell-white;
+  }
+
+  @media (max-width: 480px) {
+    width: 100px;
+    height: 100px;
+
+    svg {
+      width: 50px;
+      height: 50px;
+    }
+  }
+}
+
+.profile-name {
+  font-family: "Payton", sans-serif, system-ui;
+  font-size: 2rem;
+  font-weight: 700;
+  color: vars.$ocean-deep;
+  margin: 0 0 0.5rem 0;
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+  }
+}
+
+.profile-title {
+  font-size: 1.1rem;
+  color: vars.$driftwood;
+  margin: 0;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
+}
+
+.section-title {
+  font-family: "Payton", sans-serif, system-ui;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: vars.$ocean-deep;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid vars.$seafoam;
+  display: inline-block;
+
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+  }
+}
+
+.section-text {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: vars.$driftwood;
+  margin: 0;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
+}
+
+// Skills Grid
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.skill-tag {
+  background: linear-gradient(135deg, vars.$ocean-blue, vars.$seafoam);
+  color: vars.$shell-white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 164, 0.3);
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+// Projects Grid
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.project-card {
+  background: vars.$shell-white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.project-image {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, vars.$sand-medium, vars.$sand-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 480px) {
+    height: 160px;
+  }
+}
+
+.project-placeholder {
+  font-family: "Payton", sans-serif, system-ui;
+  font-size: 4rem;
+  font-weight: 700;
+  color: vars.$shell-white;
+  opacity: 0.5;
+
+  @media (max-width: 480px) {
+    font-size: 3rem;
+  }
+}
+
+.project-info {
+  padding: 1.5rem;
+}
+
+.project-title {
+  font-family: "Payton", sans-serif, system-ui;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: vars.$ocean-deep;
+  margin: 0 0 0.75rem 0;
+
+  @media (max-width: 480px) {
+    font-size: 1.15rem;
+  }
+}
+
+.project-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: vars.$driftwood;
+  margin: 0 0 1rem 0;
+
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+  }
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background: vars.$sand-light;
+  color: vars.$ocean-deep;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+  }
+}
+
+// Contact Grid
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.contact-card {
+  background: vars.$shell-white;
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(74, 144, 164, 0.2);
+
+    .contact-icon {
+      background: linear-gradient(
+        135deg,
+        vars.$coral-accent,
+        vars.$sunset-orange
+      );
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.5rem 1rem;
+  }
+}
+
+.contact-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, vars.$ocean-blue, vars.$seafoam);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  svg {
+    width: 30px;
+    height: 30px;
+    color: vars.$shell-white;
+  }
+
+  @media (max-width: 480px) {
+    width: 50px;
+    height: 50px;
+
+    svg {
+      width: 25px;
+      height: 25px;
+    }
+  }
+}
+
+.contact-label {
+  font-family: "Payton", sans-serif, system-ui;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: vars.$ocean-deep;
+  margin: 0 0 0.5rem 0;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
+}
+
+.contact-value {
+  font-size: 0.9rem;
+  color: vars.$driftwood;
+  margin: 0;
+  word-break: break-word;
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
+}
+
+// Hobbies Story Layout
+.hobbies-story {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    gap: 2rem;
+  }
+}
+
+.story-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+// Alternate image positioning
+.story-image-left {
+  .story-image {
+    order: 1;
+  }
+
+  .story-content {
+    order: 2;
+  }
+
+  @media (max-width: 768px) {
+    .story-image {
+      order: 1;
+    }
+
+    .story-content {
+      order: 2;
+    }
+  }
+}
+
+.story-image-right {
+  .story-content {
+    order: 1;
+  }
+
+  .story-image {
+    order: 2;
+  }
+
+  @media (max-width: 768px) {
+    .story-image {
+      order: 1;
+    }
+
+    .story-content {
+      order: 2;
+    }
+  }
+}
+
+// Story Images with varying sizes
+.story-image {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: all 0.4s ease;
+
+  &:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 32px rgba(74, 144, 164, 0.25);
+  }
+}
+
+.story-image-large {
+  height: 320px;
+
+  @media (max-width: 768px) {
+    height: 240px;
+  }
+}
+
+.story-image-medium {
+  height: 260px;
+
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+}
+
+.story-image-small {
+  height: 200px;
+
+  @media (max-width: 768px) {
+    height: 180px;
+  }
+}
+
+.hobby-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, vars.$ocean-blue, vars.$seafoam);
+
+  svg {
+    width: 60px;
+    height: 60px;
+    color: vars.$shell-white;
+    opacity: 0.6;
+  }
+
+  @media (max-width: 480px) {
+    svg {
+      width: 50px;
+      height: 50px;
+    }
+  }
+}
+
+.story-content {
+  padding: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
+}
+
+.hobby-title {
+  font-family: "Payton", sans-serif, system-ui;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: vars.$ocean-deep;
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.3rem;
+  }
+}
+
+.hobby-description {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: vars.$driftwood;
+  margin: 0;
+
+  @media (max-width: 480px) {
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
 }

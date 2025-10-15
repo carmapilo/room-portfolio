@@ -85,6 +85,7 @@ const modals = {
   about: document.querySelector(".modal.about"),
   projects: document.querySelector(".modal.projects"),
   contact: document.querySelector(".modal.contact"),
+  hobbies: document.querySelector(".modal.hobbies"),
 };
 
 document.querySelectorAll(".modal-exit-button").forEach((button) => {
@@ -203,6 +204,10 @@ function handleRaycasterInteraction() {
       showModal(modals.contact);
     } else if (object.name.includes("Computer")) {
       showModal(modals.projects);
+    } else if (object.name.includes("volleyball")) {
+      showModal(modals.hobbies);
+    } else if (object.name.includes("Checkers")) {
+      showModal(modals.hobbies);
     }
   }
 }
