@@ -12,6 +12,8 @@ const loadingInstruction = document.querySelector(
   ".loading-screen-instruction"
 );
 const loadingButton = document.querySelector(".loading-screen-button");
+console.log("[v0] Loading button found:", loadingButton); // Check if button exists
+
 let isModelLoaded = false;
 let canDismissLoading = false;
 
@@ -54,7 +56,20 @@ window.addEventListener("keydown", (event) => {
 });
 
 // <CHANGE> Button click handler for loading screen
-loadingButton.addEventListener("click", () => {
+loadingButton.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (canDismissLoading) {
+    hideLoadingScreen();
+  }
+});
+
+loadingButton.addEventListener("touchend", (e) => {
+  console.log("[v0] Button touched, canDismissLoading:", canDismissLoading); // Debug
+  e.preventDefault();
+  e.stopPropagation();
+
   if (canDismissLoading) {
     hideLoadingScreen();
   }
@@ -194,7 +209,7 @@ function handleRaycasterInteraction() {
 
 window.addEventListener("click", handleRaycasterInteraction);
 
-gltfLoader.load("/models/Room_Portfoliov2.glb", (gltf) => {
+gltfLoader.load("/models/Room_Portfoliov3.glb", (gltf) => {
   // Loop through every part of the loaded model
   gltf.scene.traverse((child) => {
     // Check if the object is a mesh
@@ -271,16 +286,26 @@ controls.maxPolarAngle = Math.PI / 2;
 controls.minAzimuthAngle = 0;
 controls.maxAzimuthAngle = Math.PI / 2;
 
-camera.position.set(7.681051827298401, 5.725851969010977, 7.9782641056809);
-
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.update();
-controls.target.set(
-  -0.7293108826258348,
-  2.225315248196875,
-  -0.6843806474066922
-);
+
+// Set camera position and target based on screen width
+if (window.innerWidth < 768) {
+  camera.position.set(7.681051827298401, 5.725851969010977, 7.9782641056809);
+  controls.target.set(
+    -0.7293108826258348,
+    2.225315248196875,
+    -0.6843806474066922
+  );
+} else {
+  camera.position.set(7.681051827298401, 5.725851969010977, 7.9782641056809);
+  controls.target.set(
+    -0.7293108826258348,
+    2.225315248196875,
+    -0.6843806474066922
+  );
+}
 
 // Event Listeners
 window.addEventListener("resize", () => {
@@ -336,26 +361,26 @@ function playUpAnimation(object, isUp) {
   gsap.killTweensOf(object.position);
 
   if (isUp) {
-    gsap.to(object.scale, {
-      x: 1.15,
-      y: 1.15,
-      z: 1.15,
-      duration: 0.4,
-      ease: "power2.out",
-    });
+    // gsap.to(object.scale, {
+    //   x: 1.05,
+    //   y: 1.05,
+    //   z: 1.05,
+    //   duration: 0.4,
+    //   ease: "power2.out",
+    // });
     gsap.to(object.position, {
-      z: object.position.z + 0.3,
+      y: object.position.y + 0.3,
       duration: 0.4,
       ease: "power2.out",
     });
   } else {
-    gsap.to(object.scale, {
-      x: object.userData.initialScale.x,
-      y: object.userData.initialScale.y,
-      z: object.userData.initialScale.z,
-      duration: 0.3,
-      ease: "power2.inOut",
-    });
+    // gsap.to(object.scale, {
+    //   x: object.userData.initialScale.x,
+    //   y: object.userData.initialScale.y,
+    //   z: object.userData.initialScale.z,
+    //   duration: 0.3,
+    //   ease: "power2.inOut",
+    // });
     gsap.to(object.position, {
       x: object.userData.initialPosition.x,
       y: object.userData.initialPosition.y,
