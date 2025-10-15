@@ -58,3 +58,102 @@ body {
   z-index: 1000;
   background-color: vars.$base-white;
 }
+
+// Loading Screen
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: vars.$loading-bg;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+
+  .loading-screen-content {
+    text-align: center;
+
+    .loading-screen-text {
+      font-family: "Payton", sans-serif, system-ui;
+      font-size: 4rem;
+      color: vars.$loading-text;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      margin-bottom: 2rem;
+
+      @media (max-width: 768px) {
+        font-size: 2.5rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 2rem;
+      }
+    }
+
+    .loading-screen-instruction {
+      font-family: "Payton", sans-serif, system-ui;
+      font-size: 1.5rem;
+      color: vars.$loading-text;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      opacity: 0;
+      animation: pulse 1.5s ease-in-out infinite;
+
+      @media (max-width: 768px) {
+        font-size: 1.2rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 1rem;
+      }
+    }
+
+    .loading-screen-button {
+      margin-top: 2rem;
+      padding: 1rem 3rem;
+      font-family: "Payton", sans-serif, system-ui;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: vars.$loading-bg;
+      background-color: vars.$loading-text;
+      border: 3px solid vars.$loading-text;
+      border-radius: 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+
+      &:hover {
+        background-color: transparent;
+        color: vars.$loading-text;
+        transform: scale(1.05);
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+
+      @media (max-width: 768px) {
+        font-size: 1rem;
+        padding: 0.8rem 2.5rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 0.9rem;
+        padding: 0.7rem 2rem;
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}

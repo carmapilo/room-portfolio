@@ -1,9 +1,64 @@
 import "./style.scss";
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { OrbitControls } from "./utils/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import gsap from "gsap";
+
+// Loading Screen Logic
+const loadingScreen = document.querySelector(".loading-screen");
+const loadingText = document.querySelector(".loading-screen-text");
+const loadingInstruction = document.querySelector(
+  ".loading-screen-instruction"
+);
+const loadingButton = document.querySelector(".loading-screen-button");
+let isModelLoaded = false;
+let canDismissLoading = false;
+
+function hideLoadingScreen() {
+  gsap.to(loadingScreen, {
+    opacity: 0,
+    duration: 0.8,
+    ease: "power2.inOut",
+    onComplete: () => {
+      loadingScreen.style.display = "none";
+    },
+  });
+}
+
+function onModelLoaded() {
+  isModelLoaded = true;
+  canDismissLoading = true;
+
+  // Change text to "Press Enter" and show button
+  gsap.to(loadingText, {
+    opacity: 0,
+    duration: 0.3,
+    onComplete: () => {
+      loadingText.textContent = "READY";
+      loadingInstruction.style.display = "block";
+      loadingButton.style.display = "inline-block";
+
+      gsap.to(loadingText, { opacity: 1, duration: 0.3 });
+      gsap.to(loadingInstruction, { opacity: 1, duration: 0.3 });
+      gsap.to(loadingButton, { opacity: 1, duration: 0.3 });
+    },
+  });
+}
+
+// Listen for Enter key
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && canDismissLoading) {
+    hideLoadingScreen();
+  }
+});
+
+// <CHANGE> Button click handler for loading screen
+loadingButton.addEventListener("click", () => {
+  if (canDismissLoading) {
+    hideLoadingScreen();
+  }
+});
 
 const canvas = document.querySelector("#experience-canvas");
 const sizes = {
@@ -77,6 +132,7 @@ const hideModal = (modal) => {
 const raycasterObjects = [];
 let currentIntersects = [];
 let currentHoveredObject = null;
+let currentUpObject = null;
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -164,11 +220,12 @@ gltfLoader.load("/models/Room_Portfoliov2.glb", (gltf) => {
     }
   });
   scene.add(gltf.scene);
+  onModelLoaded();
 });
 
 const scene = new THREE.Scene();
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+const ambientLight = new THREE.AmbientLight(0xffffff, 3);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
@@ -207,6 +264,13 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.maxDistance = 15;
+controls.minDistance = 5;
+controls.minPolarAngle = 0;
+controls.maxPolarAngle = Math.PI / 2;
+controls.minAzimuthAngle = 0;
+controls.maxAzimuthAngle = Math.PI / 2;
+
 camera.position.set(7.681051827298401, 5.725851969010977, 7.9782641056809);
 
 controls.enableDamping = true;
@@ -266,6 +330,42 @@ function playHoverAnimation(object, isHovering) {
   }
 }
 
+function playUpAnimation(object, isUp) {
+  gsap.killTweensOf(object.scale);
+  gsap.killTweensOf(object.rotation);
+  gsap.killTweensOf(object.position);
+
+  if (isUp) {
+    gsap.to(object.scale, {
+      x: 1.15,
+      y: 1.15,
+      z: 1.15,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+    gsap.to(object.position, {
+      z: object.position.z + 0.3,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+  } else {
+    gsap.to(object.scale, {
+      x: object.userData.initialScale.x,
+      y: object.userData.initialScale.y,
+      z: object.userData.initialScale.z,
+      duration: 0.3,
+      ease: "power2.inOut",
+    });
+    gsap.to(object.position, {
+      x: object.userData.initialPosition.x,
+      y: object.userData.initialPosition.y,
+      z: object.userData.initialPosition.z,
+      duration: 0.3,
+      ease: "power2.inOut",
+    });
+  }
+}
+
 function render() {
   controls.update();
 
@@ -279,37 +379,53 @@ function render() {
 
     // calculate objects intersecting the picking ray
     currentIntersects = raycaster.intersectObjects(raycasterObjects);
+    let currentIntersectObject = null;
 
     if (currentIntersects.length > 0) {
-      let currentIntersectObject = currentIntersects[0].object;
-      while (
-        currentIntersectObject.parent &&
-        !currentIntersectObject.name.includes("Raycaster")
-      ) {
-        currentIntersectObject = currentIntersectObject.parent;
+      let hitObject = currentIntersects[0].object;
+      while (hitObject.parent && !hitObject.name.includes("Raycaster")) {
+        hitObject = hitObject.parent;
       }
+      currentIntersectObject = hitObject;
+    }
 
-      // console.log(currentIntersectObject.name);
+    if (
+      currentIntersectObject &&
+      currentIntersectObject.name.includes("Hover")
+    ) {
+      document.body.style.cursor = "pointer";
 
-      if (currentIntersectObject.name.includes("Hover")) {
-        if (currentHoveredObject !== currentIntersectObject) {
-          if (currentHoveredObject) {
-            playHoverAnimation(currentHoveredObject, false);
-          }
-
-          playHoverAnimation(currentIntersectObject, true);
-          currentHoveredObject = currentIntersectObject;
+      if (currentHoveredObject !== currentIntersectObject) {
+        if (currentHoveredObject) {
+          playHoverAnimation(currentHoveredObject, false);
         }
+
+        playHoverAnimation(currentIntersectObject, true);
+        currentHoveredObject = currentIntersectObject;
       }
+    } else if (
+      currentIntersectObject &&
+      currentIntersectObject.name.includes("Up")
+    ) {
+      if (currentUpObject !== currentIntersectObject) {
+        if (currentUpObject) {
+          playUpAnimation(currentUpObject, false);
+        }
+
+        playUpAnimation(currentIntersectObject, true);
+        currentUpObject = currentIntersectObject;
+      }
+    } else {
+      if (currentHoveredObject) {
+        playHoverAnimation(currentHoveredObject, false);
+        currentHoveredObject = null;
+      }
+      if (currentUpObject) {
+        playUpAnimation(currentUpObject, false);
+        currentUpObject = null;
+      }
+      document.body.style.cursor = "default";
     }
-    // console.log(currentIntersects[0].object.name);
-    document.body.style.cursor = "pointer";
-  } else {
-    if (currentHoveredObject) {
-      playHoverAnimation(currentHoveredObject, false);
-      currentHoveredObject = null;
-    }
-    document.body.style.cursor = "default";
   }
 
   renderer.render(scene, camera);
