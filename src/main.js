@@ -248,7 +248,7 @@ gltfLoader.load("/models/Room_Portfoliov4.glb", (gltf) => {
 
 const scene = new THREE.Scene();
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 3);
+const ambientLight = new THREE.AmbientLight(0xffffff, 3.5);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
@@ -439,6 +439,7 @@ function render() {
       currentIntersectObject &&
       currentIntersectObject.name.includes("Up")
     ) {
+      document.body.style.cursor = "pointer";
       if (currentUpObject !== currentIntersectObject) {
         if (currentUpObject) {
           playUpAnimation(currentUpObject, false);
