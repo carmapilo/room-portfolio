@@ -12,7 +12,6 @@ const loadingInstruction = document.querySelector(
   ".loading-screen-instruction"
 );
 const loadingButton = document.querySelector(".loading-screen-button");
-console.log("[v0] Loading button found:", loadingButton); // Check if button exists
 
 let isModelLoaded = false;
 let canDismissLoading = false;
@@ -66,7 +65,6 @@ loadingButton.addEventListener("click", (e) => {
 });
 
 loadingButton.addEventListener("touchend", (e) => {
-  console.log("[v0] Button touched, canDismissLoading:", canDismissLoading); // Debug
   e.preventDefault();
   e.stopPropagation();
 
@@ -129,7 +127,12 @@ const showModal = (modal) => {
   currentIntersects = [];
 
   gsap.set(modal, { opacity: 0 });
-  gsap.to(modal, { opacity: 1, duration: 0.5, ease: "power2.inOut" });
+  gsap.to(modal, {
+    opacity: 1,
+    duration: 0.5,
+    delay: 0.1,
+    ease: "power2.inOut",
+  });
 };
 
 const hideModal = (modal) => {
@@ -214,7 +217,7 @@ function handleRaycasterInteraction() {
 
 window.addEventListener("click", handleRaycasterInteraction);
 
-gltfLoader.load("/models/Room_Portfoliov3.glb", (gltf) => {
+gltfLoader.load("/models/Room_Portfoliov4.glb", (gltf) => {
   // Loop through every part of the loaded model
   gltf.scene.traverse((child) => {
     // Check if the object is a mesh
@@ -284,8 +287,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.maxDistance = 15;
-controls.minDistance = 5;
+
 controls.minPolarAngle = 0;
 controls.maxPolarAngle = Math.PI / 2;
 controls.minAzimuthAngle = 0;
@@ -296,7 +298,9 @@ controls.dampingFactor = 0.05;
 controls.update();
 
 // Set camera position and target based on screen width
-if (window.innerWidth < 768) {
+if (window.innerWidth > 768) {
+  controls.maxDistance = 20;
+  controls.minDistance = 10;
   camera.position.set(7.681051827298401, 5.725851969010977, 7.9782641056809);
   controls.target.set(
     -0.7293108826258348,
@@ -304,12 +308,10 @@ if (window.innerWidth < 768) {
     -0.6843806474066922
   );
 } else {
-  camera.position.set(7.681051827298401, 5.725851969010977, 7.9782641056809);
-  controls.target.set(
-    -0.7293108826258348,
-    2.225315248196875,
-    -0.6843806474066922
-  );
+  controls.maxDistance = 30;
+  controls.minDistance = 10;
+  camera.position.set(12.14, 6.6, 14.918);
+  controls.target.set(-1, 4, 2);
 }
 
 // Event Listeners
@@ -333,9 +335,9 @@ function playHoverAnimation(object, isHovering) {
 
   if (isHovering) {
     gsap.to(object.scale, {
-      x: object.userData.initialScale.x * 1.2,
-      y: object.userData.initialScale.y * 1.2,
-      z: object.userData.initialScale.z * 1.2,
+      x: object.userData.initialScale.x * 1.3,
+      y: object.userData.initialScale.y * 1.3,
+      z: object.userData.initialScale.z * 1.3,
       duration: 0.5,
       ease: "power2.inOut",
     });
