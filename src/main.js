@@ -308,7 +308,7 @@ if (window.innerWidth > 768) {
     -0.6843806474066922
   );
 } else {
-  controls.maxDistance = 25;
+  controls.maxDistance = 30;
   controls.minDistance = 10;
   camera.position.set(12.14, 6.6, 14.918);
   controls.target.set(-1, 4, 2);
