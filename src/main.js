@@ -299,7 +299,7 @@ controls.update();
 
 // Set camera position and target based on screen width
 if (window.innerWidth > 768) {
-  controls.maxDistance = 20;
+  controls.maxDistance = 15;
   controls.minDistance = 10;
   camera.position.set(7.681051827298401, 5.725851969010977, 7.9782641056809);
   controls.target.set(
@@ -308,7 +308,7 @@ if (window.innerWidth > 768) {
     -0.6843806474066922
   );
 } else {
-  controls.maxDistance = 30;
+  controls.maxDistance = 25;
   controls.minDistance = 10;
   camera.position.set(12.14, 6.6, 14.918);
   controls.target.set(-1, 4, 2);

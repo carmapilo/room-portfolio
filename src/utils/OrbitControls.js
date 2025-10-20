@@ -40,8 +40,8 @@ const _plane = new Plane();
 const _TILT_LIMIT = Math.cos(70 * MathUtils.DEG2RAD);
 
 // Pan limit
-const minPan = new Vector3(-1, 2, -2);
-const maxPan = new Vector3(2, 4, 2);
+const minPan = new Vector3(-1, 2, -1);
+const maxPan = new Vector3(-0.5, 2.5, -0.5);
 
 const _v = new Vector3();
 const _twoPI = 2 * Math.PI;
